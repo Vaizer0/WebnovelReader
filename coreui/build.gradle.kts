@@ -36,4 +36,7 @@ dependencies {
     implementation(libs.compose.landscapist.glide)
     implementation(libs.compose.coil)
     implementation(libs.compose.lazyColumnScrollbar)
+
+    implementation(platform(libs.sora.editor.bom))
+    implementation(libs.sora.editor.core)
 }

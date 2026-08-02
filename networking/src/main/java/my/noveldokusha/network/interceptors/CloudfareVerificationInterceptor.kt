@@ -145,6 +145,9 @@ internal class CloudFareVerificationInterceptor(
     }
 
     private fun isNotCloudFare(response: Response): Boolean {
+        val host = response.request.url.host
+        val domainOptions = LuaCfOptionsRegistry.getForHost(host)
+        if (domainOptions?.whitelist == true) return true
         return response.code !in ERROR_CODES ||
                 response.header("Server") !in SERVER_CHECK
     }

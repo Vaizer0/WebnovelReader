@@ -28,9 +28,10 @@ class ScraperRepository @Inject constructor(
     fun sourcesCatalogListFlow(): Flow<List<CatalogItem>> {
         return combine(
             appPreferences.SOURCES_LANGUAGES_ISO639_1.flow(),
-            appPreferences.FINDER_SOURCES_PINNED.flow()
-        ) { activeLanguages, pinnedSourcesIds ->
-            scraper.sourcesCatalogsList
+            appPreferences.FINDER_SOURCES_PINNED.flow(),
+            scraper.sourcesCatalogListFlow
+        ) { activeLanguages, pinnedSourcesIds, catalogs ->
+            catalogs
                 .filter { it.language == null || it.language?.iso639_1 in activeLanguages }
                 .map { CatalogItem(catalog = it, pinned = it.id in pinnedSourcesIds) }
                 .sortedByDescending { it.pinned }
@@ -44,13 +45,13 @@ class ScraperRepository @Inject constructor(
         scraper.getCompatibleSourceCatalog(url)
 
     fun sourcesLanguagesListFlow(): Flow<List<LanguageItem>> {
-        return appPreferences.SOURCES_LANGUAGES_ISO639_1.flow()
-            .map { activeLanguages ->
-                scraper
-                    .sourcesCatalogsLanguagesList
-                    .map {
-                        LanguageItem(it, active = activeLanguages.contains(it.iso639_1))
-                    }
+        return combine(
+            appPreferences.SOURCES_LANGUAGES_ISO639_1.flow(),
+            scraper.sourcesLanguagesListFlow
+        ) { activeLanguages, languages ->
+            languages.map {
+                LanguageItem(it, active = activeLanguages.contains(it.iso639_1))
             }
+        }
     }
 }

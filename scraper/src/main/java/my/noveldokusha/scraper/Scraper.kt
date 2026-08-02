@@ -1,5 +1,14 @@
 package my.noveldokusha.scraper
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import my.noveldokusha.core.LanguageCode
 import my.noveldokusha.network.NetworkClient
 import my.noveldokusha.scraper.databases.BakaUpdates
 import my.noveldokusha.scraper.databases.NovelUpdates
@@ -41,18 +50,38 @@ import my.noveldokusha.scraper.sources.Twkan
 import my.noveldokusha.scraper.sources.Ttkan
 import my.noveldokusha.scraper.sources.QqBook
 import my.noveldokusha.scraper.sources.WfxsTw
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class Scraper @Inject constructor(
     networkClient: NetworkClient,
-    localSource: LocalSource
+    localSource: LocalSource,
+    private val luaSourceProvider: LuaSourceProvider
 ) {
     val databasesList = setOf(
         NovelUpdates(networkClient),
         BakaUpdates(networkClient)
     )
+
+    private val scraperScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val _luaSources = MutableStateFlow<Set<SourceInterface>>(emptySet())
+    val luaSources: StateFlow<Set<SourceInterface>> = _luaSources.asStateFlow()
+
+    init {
+        scraperScope.launch {
+            luaSourceProvider.sourcesFlow.collect { sources ->
+                _luaSources.value = sources.toSet()
+                Timber.d("Lua sources updated: ${sources.size}")
+            }
+        }
+    }
+
+    suspend fun awaitLoaded() = luaSourceProvider.awaitLoaded()
+
+    fun clearCache() = luaSourceProvider.clearCache()
 
     val sourcesList = setOf(
         localSource,
@@ -96,6 +125,21 @@ class Scraper @Inject constructor(
         WtrLab(networkClient),
     )
 
+    /** Все источники включая CachedSource заглушки (для UI) */
+    val sourcesCatalogListFlow: kotlinx.coroutines.flow.Flow<List<SourceInterface.Catalog>> =
+        _luaSources.map { lua ->
+            (sourcesList + lua).filterIsInstance<SourceInterface.Catalog>()
+        }
+
+    val sourcesLanguagesListFlow: kotlinx.coroutines.flow.Flow<List<LanguageCode>> =
+        sourcesCatalogListFlow.map { catalogs ->
+            catalogs.mapNotNull { it.language }.distinct()
+        }
+
+    /** Только загруженные реальные Lua-источники (для data-операций) */
+    val loadedSourcesList: Set<SourceInterface>
+        get() = sourcesList + luaSourceProvider.loadedSourcesFlow.value.toSet()
+
     val sourcesCatalogsList = sourcesList.filterIsInstance<SourceInterface.Catalog>()
     val sourcesCatalogsLanguagesList = sourcesCatalogsList.mapNotNull { it.language }.toSet()
 
@@ -106,11 +150,18 @@ class Scraper @Inject constructor(
     }
 
     fun getCompatibleSource(url: String): SourceInterface? =
-        sourcesList.find { url.isCompatibleWithBaseUrl(it.baseUrl) }
+        loadedSourcesList.find { url.isCompatibleWithBaseUrl(it.baseUrl) }
 
     fun getCompatibleSourceCatalog(url: String): SourceInterface.Catalog? =
-        sourcesCatalogsList.find { url.isCompatibleWithBaseUrl(it.baseUrl) }
+        loadedSourcesList.filterIsInstance<SourceInterface.Catalog>()
+            .find { url.isCompatibleWithBaseUrl(it.baseUrl) }
 
     fun getCompatibleDatabase(url: String): DatabaseInterface? =
         databasesList.find { url.isCompatibleWithBaseUrl(it.baseUrl) }
+
+    fun isUrlSupported(url: String): Boolean =
+        loadedSourcesList.find { url.isCompatibleWithBaseUrl(it.baseUrl) } != null
+
+    fun getSourceId(url: String): String? =
+        loadedSourcesList.find { url.isCompatibleWithBaseUrl(it.baseUrl) }?.id
 }

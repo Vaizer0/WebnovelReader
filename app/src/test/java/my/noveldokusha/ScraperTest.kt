@@ -1,6 +1,7 @@
 package my.noveldokusha
 
 import my.noveldokusha.network.NetworkClient
+import my.noveldokusha.scraper.LuaSourceProvider
 import my.noveldokusha.scraper.Scraper
 import my.noveldokusha.tooling.local_source.AppLocalSources
 import org.junit.Assert.assertEquals
@@ -16,10 +17,12 @@ import org.mockito.kotlin.mock
 class ScraperTest {
 
     private val networkClient: NetworkClient = mock()
+    private val luaSourceProvider: LuaSourceProvider = mock()
 
     private val sut = Scraper(
         networkClient = networkClient,
-        localSource = AppLocalSources(mock(), mock(), mock())
+        localSource = AppLocalSources(mock(), mock(), mock()),
+        luaSourceProvider = luaSourceProvider
     )
 
     @Before

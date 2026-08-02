@@ -2,11 +2,18 @@
 
 package my.noveldoksuha.coreui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 val ColorAccent = Color(0xFF2A59B6)
 val ColorLike = Color(0xFFF44336)
 val ColorNotice = Color(0xFFE48800)
+
+@Composable
+@ReadOnlyComposable
+fun colorAccent(): Color = MaterialTheme.colorScheme.primary
 
 val Grey0 = Color(0xFFFFFFFF)
 val Grey25 = Color(0xFFFEFEFE)

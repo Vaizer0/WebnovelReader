@@ -8,6 +8,7 @@ import my.noveldokusha.network.interceptors.CloudFareVerificationInterceptor
 import my.noveldokusha.network.interceptors.DecodeResponseInterceptor
 import my.noveldokusha.network.interceptors.UserAgentInterceptor
 import okhttp3.Cache
+import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -22,6 +23,8 @@ interface NetworkClient {
     suspend fun call(request: Request.Builder, followRedirects: Boolean = false): Response
     suspend fun get(url: String): Response
     suspend fun get(url: Uri.Builder): Response
+    suspend fun getWithHeaders(url: String, headers: Map<String, String>): Response
+    val cookieJar: CookieJar
 }
 
 @Singleton
@@ -33,7 +36,7 @@ class ScraperNetworkClient @Inject constructor(
     private val cacheDir = File(appContext.cacheDir, "network_cache")
     private val cacheSize = 5L * 1024 * 1024
 
-    private val cookieJar = ScraperCookieJar()
+    override val cookieJar = ScraperCookieJar()
 
     private val okhttpLoggingInterceptor = HttpLoggingInterceptor {
         Timber.v(it)
@@ -68,4 +71,10 @@ class ScraperNetworkClient @Inject constructor(
 
     override suspend fun get(url: String) = call(getRequest(url))
     override suspend fun get(url: Uri.Builder) = call(getRequest(url.toString()))
+
+    override suspend fun getWithHeaders(url: String, headers: Map<String, String>): Response {
+        val builder = getRequest(url)
+        headers.forEach { (name, value) -> builder.header(name, value) }
+        return call(builder)
+    }
 }

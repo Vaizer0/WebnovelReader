@@ -42,6 +42,23 @@ internal fun databaseMigrations() = arrayOf(
             ON ChapterTranslation (chapterUrl, sourceLang, targetLang)
         """)
     },
+    migration(9) {
+        it.execSQL("""
+            CREATE TABLE Extension (
+                id TEXT PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                fileName TEXT NOT NULL,
+                imageURL TEXT NOT NULL,
+                language TEXT NOT NULL,
+                version TEXT NOT NULL,
+                md5 TEXT NOT NULL,
+                enabled INTEGER NOT NULL,
+                installed INTEGER NOT NULL,
+                chapterType TEXT NOT NULL,
+                settings TEXT NOT NULL
+            )
+        """)
+    },
 )
 
 internal fun migration(vi: Int, migrate: (SupportSQLiteDatabase) -> Unit) =

@@ -107,6 +107,26 @@ class AppPreferences @Inject constructor(
     val FINDER_SOURCES_PINNED = object : Preference<Set<String>>("FINDER_SOURCES_PINNED") {
         override var value by SharedPreference_StringSet(name, preferences, setOf())
     }
+    val EXTENSIONS_LANGUAGES_FILTER = object : Preference<Set<String>>("EXTENSIONS_LANGUAGES_FILTER") {
+        override var value by SharedPreference_StringSet(name, preferences, setOf())
+    }
+    val EXTENSIONS_REPOSITORY_URL = object : Preference<String>("EXTENSIONS_REPOSITORY_URL") {
+        override var value by SharedPreference_String(
+            name,
+            preferences,
+            "https://raw.githubusercontent.com/HnDK0/external-sources/refs/heads/main/index.yaml"
+        )
+    }
+    val EXTENSIONS_AVAILABLE_CACHE =
+        object : Preference<List<ExtensionInfoCached>>("EXTENSIONS_AVAILABLE_CACHE") {
+            override var value by SharedPreference_Serializable<List<ExtensionInfoCached>>(
+                name = name,
+                sharedPreferences = preferences,
+                defaultValue = listOf(),
+                encode = { Json.encodeToString(it) },
+                decode = { Json.decodeFromString(it) }
+            )
+        }
     val LIBRARY_FILTER_READ = object : Preference<TernaryState>("LIBRARY_FILTER_READ") {
         override var value by SharedPreference_Enum(
             name,
