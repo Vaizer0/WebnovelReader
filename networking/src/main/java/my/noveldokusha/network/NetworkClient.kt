@@ -36,7 +36,7 @@ class ScraperNetworkClient @Inject constructor(
     private val cacheDir = File(appContext.cacheDir, "network_cache")
     private val cacheSize = 5L * 1024 * 1024
 
-    override val cookieJar = ScraperCookieJar()
+    override val cookieJar: CookieJar = ScraperCookieJar()
 
     private val okhttpLoggingInterceptor = HttpLoggingInterceptor {
         Timber.v(it)
