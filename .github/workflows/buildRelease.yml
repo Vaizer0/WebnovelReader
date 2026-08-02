@@ -44,7 +44,7 @@ jobs:
           EOF
 
       - name: Build app
-        run: ./gradlew assembleRelease -PlocalPropertiesFilePath=custom.properties
+        run: chmod +x gradlew && ./gradlew assembleRelease -PlocalPropertiesFilePath=custom.properties
 
       - name: Create apk env info entries, move APK
         run: python .github/build_scripts/extract_info.py
@@ -54,6 +54,4 @@ jobs:
         with:
           name: NovelDokusha v${{ env.APP_VERSION }}
           tag_name: v${{ env.APP_VERSION }}
-          files: |
-            ${{ env.APK_FILE_PATH_full }}
-            ${{ env.APK_FILE_PATH_foss }}
+          files: ${{ env.APK_FILE_PATH }}

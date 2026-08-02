@@ -24,17 +24,22 @@ def getAPKs():
 
 def processAPK(path, fileName):
     fileNamePath = os.path.join(path, fileName)
-    name, version, flavour = re.match(
-        "^(.+)_v(\d+\.\d+\.\d+)-(.+)-.*\.apk$", fileName).groups()
+    match = re.match(r"^(.+)_v(\d+\.\d+\.\d+)(?:-(.+?))?-.*\.apk$", fileName)
+    if not match:
+        print(f"Skipping APK with unexpected name: {fileName}")
+        return
+    name, version, flavour = match.groups()
+    flavour = flavour or "release"
     newFileName = f"NovelDokusha_v{version}_{flavour}.apk"
     newFileNamePath = os.path.join(path, newFileName)
 
     shutil.move(fileNamePath, newFileNamePath)
 
-    print(f"{name=} {version=} {newFileName=}")
+    print(f"{name=} {version=} {flavour=} {newFileName=}")
 
     setEnvValue("APP_VERSION", version)
     setEnvValue(f"APK_FILE_PATH_{flavour}", newFileNamePath)
+    setEnvValue("APK_FILE_PATH", newFileNamePath)
 
 
 for [path, fileName] in getAPKs():
