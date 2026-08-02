@@ -10,7 +10,9 @@ import dagger.hilt.components.SingletonComponent
 import my.noveldokusha.App
 import my.noveldokusha.AppNavigationRoutes
 import my.noveldokusha.BuildConfig
+import my.noveldokusha.ExtensionRepository
 import my.noveldokusha.core.AppInternalState
+import my.noveldokusha.core.ExtensionManager
 import my.noveldokusha.core.Toasty
 import my.noveldokusha.core.ToastyToast
 import my.noveldokusha.navigation.NavigationRoutes
@@ -31,6 +33,10 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindToasty(toast: ToastyToast): Toasty
+
+    @Binds
+    @Singleton
+    abstract fun bindExtensionManager(extensionRepository: ExtensionRepository): ExtensionManager
 
     companion object {
 
