@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.coreui)
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.timber)
     implementation(libs.jsoup)
     implementation(libs.gson)
     implementation(libs.okhttp)
