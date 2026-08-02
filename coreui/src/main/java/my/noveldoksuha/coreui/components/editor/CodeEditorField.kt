@@ -1,9 +1,9 @@
 package my.noveldoksuha.coreui.components.editor
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -40,6 +40,7 @@ fun CodeEditorField(
     val fontSp = fontSize.sp
     val lineHeight = (fontSize * 1.4f).sp
     val scrollState = rememberScrollState()
+    val horizontalScrollState = rememberScrollState()
 
     var value by remember { mutableStateOf(TextFieldValue(text)) }
     LaunchedEffect(text) {
@@ -75,26 +76,33 @@ fun CodeEditorField(
                 )
             }
         }
-        BasicTextField(
-            value = value,
-            onValueChange = { newValue ->
-                value = newValue
-                onTextChange(newValue.text)
-            },
-            textStyle = TextStyle(
-                color = colors.foreground,
-                fontSize = fontSp,
-                lineHeight = lineHeight,
-                fontFamily = FontFamily.Monospace
-            ),
-            cursorBrush = SolidColor(colors.foreground),
-            softWrap = wordWrap,
-            visualTransformation = transformation,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 4.dp)
-        )
+        val editor = @Composable {
+            BasicTextField(
+                value = value,
+                onValueChange = { newValue ->
+                    value = newValue
+                    onTextChange(newValue.text)
+                },
+                textStyle = TextStyle(
+                    color = colors.foreground,
+                    fontSize = fontSp,
+                    lineHeight = lineHeight,
+                    fontFamily = FontFamily.Monospace
+                ),
+                cursorBrush = SolidColor(colors.foreground),
+                visualTransformation = transformation,
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+            )
+        }
+        if (wordWrap) {
+            Box(modifier = Modifier.weight(1f)) {
+                editor()
+            }
+        } else {
+            Box(modifier = Modifier.weight(1f).horizontalScroll(horizontalScrollState)) {
+                editor()
+            }
+        }
     }
 }
 
