@@ -74,7 +74,7 @@ class LuaSourceProviderImpl @Inject constructor(
                     nameStrId = it.nameStrId.toIntOrNull() ?: 0,
                     baseUrl = it.baseUrl,
                     language = it.language?.let { lang -> my.noveldokusha.core.LanguageCode.entries.find { it.iso639_1 == lang } },
-                    iconUrl = it.iconUrl,
+                    cachedIconUrl = it.iconUrl,
                 )
             }
         } catch (e: Exception) {

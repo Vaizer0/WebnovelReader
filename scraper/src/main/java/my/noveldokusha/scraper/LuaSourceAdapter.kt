@@ -99,11 +99,12 @@ open class LuaSourceAdapter(
     override val languageTag: String? = metadata.language.takeIf { it.isNotBlank() }
     override val iconResId: Int? = null
 
-    override val iconUrl: String? = iconUrlFromYaml
+    override val iconUrl: Any = iconUrlFromYaml
         ?: metadata.icon.takeIf { it.isNotEmpty() }?.let { icon ->
             if (icon.startsWith("http")) icon
             else "${baseUrl.trimEnd('/')}/$icon"
         }
+        ?: "$baseUrl/favicon.ico"
 
     init {
         validateLuaScript()
@@ -430,9 +431,8 @@ open class LuaSourceAdapter(
     )
 
     private fun convertLuaTableToChapterResult(table: LuaTable) = ChapterResult(
-        title  = table.get("title").optjstring(""),
-        url    = table.get("url").optjstring(""),
-        volume = table.get("volume").optjstring(null)
+        title = table.get("title").optjstring(""),
+        url   = table.get("url").optjstring("")
     )
 }
 

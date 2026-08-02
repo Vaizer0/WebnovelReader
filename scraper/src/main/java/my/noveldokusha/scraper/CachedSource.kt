@@ -19,8 +19,10 @@ class CachedSource(
     override val isLocalSource: Boolean = false,
     override val language: LanguageCode? = null,
     override val catalogUrl: String = baseUrl,
-    override val iconUrl: String? = null,
+    cachedIconUrl: String? = null,
 ) : SourceInterface.Catalog {
+
+    override val iconUrl: Any get() = cachedIconUrl ?: "$baseUrl/favicon.ico"
 
     override suspend fun getChapterList(bookUrl: String): Response<List<ChapterResult>> =
         Response.Error("Cached source: not loaded", Exception("Cached source: use full Lua source for data"))
