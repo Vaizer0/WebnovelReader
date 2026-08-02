@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - default
+      - master
     paths-ignore:
       - '**.md'
       - 'screenshots/**'
