@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import my.noveldoksuha.coreui.components.BookImageButtonView
@@ -51,8 +52,9 @@ internal fun GlobalSourceSearchScreenBody(
         contentPadding = PaddingValues(top = 8.dp, bottom = 240.dp)
     ) {
         items(listSources) { entry ->
+            val ctx = LocalContext.current
             Text(
-                text = stringResource(id = entry.source.catalog.nameStrId),
+                text = entry.source.catalog.resolveName(ctx),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(start = 12.dp)

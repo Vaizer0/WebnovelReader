@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import my.noveldoksuha.coreui.components.AnimatedTransition
@@ -111,8 +112,9 @@ internal fun CatalogList(
                     .clickable { onSourceClick(it.catalog) }
                     .animateItemPlacement(),
                 headlineContent = {
+                    val ctx = LocalContext.current
                     Text(
-                        text = stringResource(id = it.catalog.nameStrId),
+                        text = it.catalog.resolveName(ctx),
                         style = MaterialTheme.typography.titleSmall,
                     )
                 },

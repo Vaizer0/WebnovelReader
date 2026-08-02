@@ -1,5 +1,6 @@
 package my.noveldokusha.features.chapterslist
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -31,6 +32,7 @@ import my.noveldokusha.scraper.Scraper
 import my.noveldokusha.scraper.SourceInterface
 import my.noveldokusha.text_translator.domain.MetadataTranslator
 import javax.inject.Inject
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 interface ChapterStateBundle {
     val rawBookUrl: String
@@ -48,8 +50,9 @@ internal class ChaptersViewModel @Inject constructor(
     private val downloaderRepository: DownloaderRepository,
     private val chaptersRepository: ChaptersRepository,
     private val epubImporterRepository: EpubImporterRepository,
-    private val metadataTranslator: MetadataTranslator,
+    private val     metadataTranslator: MetadataTranslator,
     stateHandle: SavedStateHandle,
+    @ApplicationContext private val context: Context,
 ) : BaseViewModel(), ChapterStateBundle {
 
     override val rawBookUrl by StateExtra_String(stateHandle)
@@ -77,7 +80,7 @@ internal class ChaptersViewModel @Inject constructor(
         chapters = mutableStateListOf(),
         selectedChaptersUrl = mutableStateMapOf(),
         isRefreshing = mutableStateOf(false),
-        sourceCatalogNameStrRes = mutableStateOf(source?.nameStrId),
+        sourceCatalogName = mutableStateOf(source?.resolveName(context) ?: ""),
         settingChapterSort = appPreferences.CHAPTERS_SORT_ASCENDING.state(viewModelScope),
         isLocalSource = mutableStateOf(bookUrl.isLocalUri),
         isRefreshable = mutableStateOf(rawBookUrl.isContentUri || !bookUrl.isLocalUri)

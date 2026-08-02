@@ -69,9 +69,7 @@ internal fun ChaptersScreenBody(
             ) {
                 ChaptersScreenHeader(
                     bookState = state.book.value,
-                    sourceCatalogName = stringResource(
-                        id = state.sourceCatalogNameStrRes.value ?: R.string.invalid_source
-                    ),
+                    sourceCatalogName = state.sourceCatalogName.value,
                     numberOfChapters = state.chapters.size,
                     paddingValues = innerPadding,
                     translatedTitle = state.translatedTitle.value,

@@ -1,9 +1,11 @@
 package my.noveldokusha.sourceexplorer
 
-import androidx.compose.runtime.mutableIntStateOf
+import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import my.noveldoksuha.coreui.BaseViewModel
@@ -31,13 +33,14 @@ internal class SourceCatalogViewModel @Inject constructor(
     stateHandle: SavedStateHandle,
     appPreferences: AppPreferences,
     scraper: Scraper,
+    @ApplicationContext private val context: Context,
 ) : BaseViewModel(), SourceCatalogStateBundle {
 
     override var sourceBaseUrl by StateExtra_String(stateHandle)
     private val source = scraper.getCompatibleSourceCatalog(sourceBaseUrl)!!
 
     val state = SourceCatalogScreenState(
-        sourceCatalogNameStrId = mutableIntStateOf(source.nameStrId),
+        sourceCatalogName = mutableStateOf(source.resolveName(context)),
         searchTextInput = stateHandle.asMutableStateOf("searchTextInput") { "" },
         toolbarMode = stateHandle.asMutableStateOf("toolbarMode") { ToolbarMode.MAIN },
         fetchIterator = PagedListIteratorState(viewModelScope) {

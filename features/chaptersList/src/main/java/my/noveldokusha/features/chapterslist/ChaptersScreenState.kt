@@ -16,7 +16,7 @@ internal data class ChaptersScreenState(
     val selectedChaptersUrl: SnapshotStateMap<String, Unit>,
     val chapters: SnapshotStateList<ChapterWithContext>,
     val isRefreshing: MutableState<Boolean>,
-    val sourceCatalogNameStrRes: State<Int?>,
+    val sourceCatalogName: State<String> = mutableStateOf(""),
     val settingChapterSort: MutableState<TernaryState>,
     val isLocalSource: State<Boolean>,
     val isRefreshable: State<Boolean>,

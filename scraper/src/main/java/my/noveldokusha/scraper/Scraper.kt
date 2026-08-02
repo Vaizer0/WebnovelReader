@@ -125,10 +125,18 @@ class Scraper @Inject constructor(
         WtrLab(networkClient),
     )
 
-    /** Все источники включая CachedSource заглушки (для UI) */
+    /** Все источники включая CachedSource заглушки (для UI).
+     *
+     * Lua-источники заменяют встроенные с тем же id: для одинаковых id берётся
+     * Lua-реализация (она более свежая), чтобы в UI не дублировались строки
+     * и не было коллизий ключей в LazyColumn. */
     val sourcesCatalogListFlow: kotlinx.coroutines.flow.Flow<List<SourceInterface.Catalog>> =
         _luaSources.map { lua ->
-            (sourcesList + lua).filterIsInstance<SourceInterface.Catalog>()
+            val builtIns = sourcesList.filterIsInstance<SourceInterface.Catalog>()
+            val merged = LinkedHashMap<String, SourceInterface.Catalog>()
+            builtIns.forEach { merged.put(it.id, it) }
+            lua.filterIsInstance<SourceInterface.Catalog>().forEach { merged.put(it.id, it) }
+            merged.values.toList()
         }
 
     val sourcesLanguagesListFlow: kotlinx.coroutines.flow.Flow<List<LanguageCode>> =
