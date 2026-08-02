@@ -72,3 +72,12 @@
 -keep class my.noveldokusha.text_translator.TranslationManagerComposite { *; }
 -keep class my.noveldokusha.text_translator.TranslationManagerGemini { *; }
 -keep class my.noveldokusha.text_translator.TranslationManagerGoogleFree { *; }
+
+#### Lua sources (luaj + snakeyaml)
+# snakeyaml references desktop-only java.beans classes; luaj references javax.script.
+-dontwarn java.beans.**
+-dontwarn javax.script.**
+-dontwarn org.yaml.snakeyaml.**
+-dontwarn org.apache.bcel.**
+-dontwarn org.jspecify.**
+-keep class org.yaml.snakeyaml.** { *; }
