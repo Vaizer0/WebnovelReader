@@ -63,7 +63,6 @@ gson = "2.10.1"
 jsoup = "1.17.2"
 luajvm = "3.0.1"
 snakeyaml = "2.6"
-sora-editor = "0.24.4"
 translate = "17.0.2"
 moshi = "1.15.0"
 room = "2.6.1"
@@ -132,8 +131,6 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # Lua sources
 luaj = { module = "org.luaj:luaj-jse", version.ref = "luajvm" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
-sora-editor-bom = { module = "io.github.rosemoe:editor-bom", version.ref = "sora-editor" }
-sora-editor-core = { module = "io.github.rosemoe:editor", version.ref = "sora-editor" }
 
 # Text extractors
 readability4j = { module = "net.dankito.readability4j:readability4j", version.ref = "readability4j" }
